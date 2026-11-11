@@ -1,0 +1,15 @@
+{
+  "name": "byeblock-proxy",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Minimal SoundCloud api-v2 relay for the ByeBlock extension",
+  "type": "module",
+  "main": "server.mjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "license": "MIT"
+}

@@ -1,24 +1,108 @@
-# byeblock
-ByeBlock unblocks the geoblocking on SoundCloud.
+# ByeBlock
 
-##Get it  
-[Chrome store](https://chrome.google.com/webstore/detail/byeblock-soundcloud-geobl/polnjhnbmdjldjkkpfbjgdcoibpfniki)
+ByeBlock lets you play SoundCloud tracks that are geoblocked ("Not available in your country") or cut to a 30-second preview where you live.
 
-##Description
-SoundCloud recently introduced a geoblock feature to tracks, blocking A LOT of tracks when you are visiting from any country that isn't the states.
+This is a 2026 rewrite of [jariz/byeblock](https://github.com/jariz/byeblock) (2016), which stopped working years ago: SoundCloud rebuilt its web app, Chrome removed Manifest V2, and the original `geoblock.lol` server is gone.
 
-ByeBlock routes the part in soundcloud.com that asks for the MP3 files through a server in the US when it notices the track is blocked.
-ByeBlock does not stream the music itself through a different server, leaving you with a nearly identical soundcloud experience.
+## How it works
 
-NOTE: If you are in the US, this extension has no use for you as of now.
-Very few tracks are currently geoblocked in the US, but support for multiple locations is currently planned.
+1. A small script runs inside soundcloud.com before the web app loads and watches its calls to `api-v2.soundcloud.com`.
+2. When a response contains tracks with policy `BLOCK` or `SNIP`, ByeBlock asks **your proxy server** (running in another country) for the same tracks.
+3. If they are playable there, their stream info is merged in, so the player shows and plays the full track.
+4. When the player asks for the stream URL, that request also goes through the proxy. The audio itself is downloaded straight from SoundCloud's CDN, so playback stays as fast as normal.
 
-##Screenshots
-<img src="https://i.imgur.com/uHnZOTn.jpg" width="100%">
-<img src="https://i.imgur.com/Rod3Ld4.png" width="100%">
+Only two kinds of requests ever reach the proxy: track lookups (`/tracks`) and stream URL resolution (`/media/soundcloud:tracks:…`). Your SoundCloud login and cookies are never sent to it.
 
-##Server
-The server software running on geoblock.lol is available here:  
-https://github.com/jariz/byeblock-server
+## What changed from the 2016 version
 
-If you want to run your own server, please contact me, as I'm planning to add more locations.
+| | 2016 | 2026 |
+|---|---|---|
+| Manifest | V2, blocking `webRequest`, synchronous XHR | V3, MAIN-world content script, service worker |
+| Hooking | Patched hard-coded webpack module numbers (`59`, `265`) | Patches API responses, so it does not depend on SoundCloud's bundle layout |
+| Server | Hard-coded `geoblock.lol` (offline) | Your own server, set in the popup |
+| Server code | Express + 4 dependencies, separate repo | One file, zero dependencies, Docker and Fly.io config included |
+| Browsers | Chrome | Chrome / Edge / Brave (111+) and Firefox (128+) |
+| Permissions | Always-on access to `a-v2.sndcdn.com` | `storage` plus access to the proxy you choose, requested when you save it |
+| Extras | — | Toggle on/off, connection test, optional access token, badge counter, dark mode, tests and CI |
+
+## Install
+
+### 1. Run a proxy server
+
+The server must run in a country where the tracks you want are available (the US usually works best).
+
+**Fly.io** (free tier is enough):
+
+```sh
+cd server
+fly launch --no-deploy --copy-config --name my-byeblock   # set primary_region in fly.toml first, e.g. "iad"
+fly secrets set ACCESS_TOKEN=$(openssl rand -hex 24)
+fly deploy
+```
+
+**Docker**, on any VPS:
+
+```sh
+docker build -t byeblock-proxy server
+docker run -d -p 8787:8787 -e ACCESS_TOKEN=change-me -e REGION=us byeblock-proxy
+```
+
+**Plain Node.js 20+**:
+
+```sh
+ACCESS_TOKEN=change-me node server/server.mjs
+```
+
+Put it behind HTTPS (Fly.io does this for you). Setting `ACCESS_TOKEN` is strongly recommended, otherwise anyone who finds the URL can use your server.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `PORT` | `8787` | Port to listen on |
+| `HOST` | `0.0.0.0` | Interface to bind |
+| `ACCESS_TOKEN` | *(none)* | Required `x-byeblock-token` header value |
+| `REGION` | `FLY_REGION` or `unknown` | Label shown in the popup's connection test |
+
+### 2. Load the extension
+
+1. Download the latest zip from [Releases](https://github.com/Kuzuw/byeblock/releases) (or run `npm run package`, or just clone the repo).
+2. **Chrome / Edge / Brave:** open `chrome://extensions`, enable *Developer mode*, click *Load unpacked*, and pick the extracted folder.
+   **Firefox:** open `about:debugging#/runtime/this-firefox`, click *Load Temporary Add-on…*, and pick `manifest.json`.
+3. Click the ByeBlock icon, enter your server URL and token, press **Test**, then **Save**, and allow access when the browser asks.
+4. Reload SoundCloud. The badge counts how many tracks were unblocked in that tab.
+
+## Development
+
+No dependencies to install. Requires Node.js 20+.
+
+```sh
+npm test          # unit tests + a simulated browser run of the page hook + server tests
+npm run check     # validates manifest, file references and script syntax
+npm run package   # builds dist/byeblock-<version>.zip
+npm run proxy     # starts the proxy locally on :8787
+```
+
+```
+manifest.json
+src/
+  core.js         pure helpers (shared by page hook, background and tests)
+  page-hook.js    runs in soundcloud.com's own JS world, wraps fetch/XHR
+  bridge.js       isolated content script, passes messages to the background
+  background.js   service worker; the only part that talks to your proxy
+  popup.*         settings UI
+server/
+  server.mjs      the proxy (zero dependencies)
+test/
+```
+
+Pushing a `v*` tag makes CI build the zip and attach it to a GitHub release.
+
+## Limitations
+
+- It can only unblock tracks that are available in your proxy's country. Tracks blocked worldwide stay blocked.
+- SoundCloud may change its API at any time. The logic only depends on the `policy`, `media.transcodings` and `track_authorization` fields of track objects, but if those change, this breaks too.
+- If SoundCloud starts tying CDN stream URLs to the requesting region, audio would have to be proxied as well, which this version does not do.
+- Respect SoundCloud's terms and the rights holders in your country. This is provided as-is, for personal use.
+
+## Credits
+
+Original idea and implementation by [Jari Zwarts](https://github.com/jariz). MIT licensed, see [LICENSE.md](LICENSE.md).

@@ -1,0 +1,184 @@
+:root {
+  color-scheme: light dark;
+  --accent: #ff5500;
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #d9d9d9;
+  --field: #f6f6f6;
+  --ok: #1e8e3e;
+  --err: #d93025;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --fg: #f2f2f2;
+    --muted: #a0a0a0;
+    --border: #3a3a3c;
+    --field: #2c2c2e;
+    --ok: #81c995;
+    --err: #f28b82;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  padding: 16px;
+  font: 13px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+header > div {
+  flex: 1;
+}
+
+h1 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.sub,
+.muted,
+footer {
+  color: var(--muted);
+}
+
+.sub {
+  margin: 0;
+  font-size: 12px;
+}
+
+label {
+  display: block;
+  margin: 10px 0 4px;
+  font-weight: 600;
+}
+
+input[type='url'],
+input[type='password'] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--field);
+  color: inherit;
+  font: inherit;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+button {
+  padding: 7px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+#status {
+  min-height: 1.4em;
+  margin: 12px 0 0;
+}
+
+#status.ok {
+  color: var(--ok);
+}
+
+#status.err {
+  color: var(--err);
+}
+
+footer {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+footer a {
+  color: var(--accent);
+}
+
+/* toggle switch */
+.switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s;
+  pointer-events: none;
+}
+
+.switch span::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+
+.switch input:checked + span {
+  background: var(--accent);
+}
+
+.switch input:checked + span::after {
+  transform: translateX(16px);
+}

@@ -1,24 +1,51 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "ByeBlock: SoundCloud Geoblocking Remover",
   "short_name": "ByeBlock",
-  "author": "Jari Zwarts",
-  "homepage_url": "https://jari.io",
-  "description": "ByeBlock attempts to stream tracks through other countries when they are blocked in your own country.",
-  "version": "1.0.4",
-  "permissions": [
-    "webRequest",
-    "webRequestBlocking",
-    "*://a-v2.sndcdn.com/*"
-  ],
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "web_accessible_resources": [
-    "byeblock.js"
-  ],
+  "version": "2.0.0",
+  "description": "Plays SoundCloud tracks that are geoblocked in your country by looking them up through a proxy server you control.",
+  "author": "Jari Zwarts, Kuzuw",
+  "homepage_url": "https://github.com/Kuzuw/byeblock",
+  "minimum_chrome_version": "111",
   "icons": {
-    "512": "512.png",
-    "128": "128.png"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "ByeBlock",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background.js",
+    "scripts": ["src/core.js", "src/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://soundcloud.com/*", "https://m.soundcloud.com/*"],
+      "js": ["src/core.js", "src/page-hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": ["https://soundcloud.com/*", "https://m.soundcloud.com/*"],
+      "js": ["src/bridge.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "permissions": ["storage"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "byeblock@kuzuw.github.io",
+      "strict_min_version": "128.0"
+    }
   }
 }

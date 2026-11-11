@@ -1,0 +1,32 @@
+# Example Fly.io config. Pick the region you want SoundCloud to see you in:
+#   https://fly.io/docs/reference/regions/  (e.g. "iad" = Virginia, US)
+#
+#   fly launch --no-deploy --copy-config --name <your-app-name>
+#   fly secrets set ACCESS_TOKEN=$(openssl rand -hex 24)
+#   fly deploy
+app = "byeblock-proxy"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8787"
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
