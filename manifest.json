@@ -4,7 +4,6 @@
   "short_name": "ByeBlock",
   "version": "2.0.0",
   "description": "Plays SoundCloud tracks that are geoblocked in your country by looking them up through a proxy server you control.",
-  "author": "Jari Zwarts, Kuzuw",
   "homepage_url": "https://github.com/Kuzuw/byeblock",
   "minimum_chrome_version": "111",
   "icons": {
@@ -22,30 +21,39 @@
     }
   },
   "background": {
-    "service_worker": "src/background.js",
-    "scripts": ["src/core.js", "src/background.js"]
+    "service_worker": "src/background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://soundcloud.com/*", "https://m.soundcloud.com/*"],
-      "js": ["src/core.js", "src/page-hook.js"],
+      "matches": [
+        "https://soundcloud.com/*",
+        "https://m.soundcloud.com/*"
+      ],
+      "js": [
+        "src/core.js",
+        "src/page-hook.js"
+      ],
       "run_at": "document_start",
       "world": "MAIN",
       "all_frames": false
     },
     {
-      "matches": ["https://soundcloud.com/*", "https://m.soundcloud.com/*"],
-      "js": ["src/bridge.js"],
+      "matches": [
+        "https://soundcloud.com/*",
+        "https://m.soundcloud.com/*"
+      ],
+      "js": [
+        "src/bridge.js"
+      ],
       "run_at": "document_start",
       "all_frames": false
     }
   ],
-  "permissions": ["storage"],
-  "optional_host_permissions": ["https://*/*", "http://*/*"],
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "byeblock@kuzuw.github.io",
-      "strict_min_version": "128.0"
-    }
-  }
+  "permissions": [
+    "storage"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ]
 }

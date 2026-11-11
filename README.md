@@ -64,9 +64,9 @@ Put it behind HTTPS (Fly.io does this for you). Setting `ACCESS_TOKEN` is strong
 
 ### 2. Load the extension
 
-1. Download the latest zip from [Releases](https://github.com/Kuzuw/byeblock/releases) (or run `npm run package`, or just clone the repo).
-2. **Chrome / Edge / Brave:** open `chrome://extensions`, enable *Developer mode*, click *Load unpacked*, and pick the extracted folder.
-   **Firefox:** open `about:debugging#/runtime/this-firefox`, click *Load Temporary Add-on…*, and pick `manifest.json`.
+1. Download the zip for your browser from [Releases](https://github.com/Kuzuw/byeblock/releases): `byeblock-<version>-chrome.zip` or `byeblock-<version>-firefox.zip` (or run `npm run package`).
+2. **Chrome / Edge / Brave:** extract it, open `chrome://extensions`, enable *Developer mode*, click *Load unpacked*, and pick the extracted folder. Cloning the repo and loading its root folder works too.
+   **Firefox:** open `about:debugging#/runtime/this-firefox`, click *Load Temporary Add-on…*, and pick the Firefox zip.
 3. Click the ByeBlock icon, enter your server URL and token, press **Test**, then **Save**, and allow access when the browser asks.
 4. Reload SoundCloud. The badge counts how many tracks were unblocked in that tab.
 
@@ -77,7 +77,7 @@ No dependencies to install. Requires Node.js 20+.
 ```sh
 npm test          # unit tests + a simulated browser run of the page hook + server tests
 npm run check     # validates manifest, file references and script syntax
-npm run package   # builds dist/byeblock-<version>.zip
+npm run package   # builds dist/byeblock-<version>-{chrome,firefox}.zip
 npm run proxy     # starts the proxy locally on :8787
 ```
 
@@ -89,12 +89,14 @@ src/
   bridge.js       isolated content script, passes messages to the background
   background.js   service worker; the only part that talks to your proxy
   popup.*         settings UI
+scripts/
+  firefox-manifest.mjs  derives the Firefox manifest (background.scripts) from manifest.json
 server/
   server.mjs      the proxy (zero dependencies)
 test/
 ```
 
-Pushing a `v*` tag makes CI build the zip and attach it to a GitHub release.
+Publishing a release (or pushing a `v*` tag) makes CI build both zips and attach them to it.
 
 ## Limitations
 

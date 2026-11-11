@@ -5,6 +5,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { firefoxManifest } from './firefox-manifest.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -19,6 +20,11 @@ const referenced = new Set([
   ...(manifest.background?.scripts || []),
   ...(manifest.content_scripts || []).flatMap((cs) => cs.js || []),
 ]);
+const ff = firefoxManifest(manifest);
+for (const file of ff.background.scripts) referenced.add(file);
+if (manifest.background?.scripts) errors.push('manifest.json: background.scripts belongs in the Firefox build only');
+if (!manifest.background?.service_worker) errors.push('manifest.json: background.service_worker is required');
+
 for (const file of referenced) {
   if (file && !existsSync(join(root, file))) errors.push(`manifest references missing file: ${file}`);
 }
