@@ -31,7 +31,13 @@ Only two kinds of requests ever reach the proxy: track lookups (`/tracks`) and s
 
 The server must run in a country where the tracks you want are available (the US usually works best).
 
-**Fly.io** (free tier is enough):
+**Easiest: Vercel, one click, free.** Functions run in Washington, D.C. (`iad1`) by default.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKuzuw%2Fbyeblock&project-name=byeblock-proxy&repository-name=byeblock-proxy)
+
+Sign in with GitHub, press *Create*, wait about a minute, then copy the `https://….vercel.app` address into the ByeBlock popup. To limit use to yourself, add an `ACCESS_TOKEN` environment variable in the Vercel project settings, redeploy, and enter the same token in the popup.
+
+**Fly.io** (pick any region):
 
 ```sh
 cd server
@@ -93,6 +99,7 @@ scripts/
   firefox-manifest.mjs  derives the Firefox manifest (background.scripts) from manifest.json
 server/
   server.mjs      the proxy (zero dependencies)
+api/index.js      Vercel entry point for the same proxy (see vercel.json)
 test/
 ```
 

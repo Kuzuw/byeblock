@@ -1,0 +1,8 @@
+src
+icons
+test
+scripts
+dist
+.github
+*.md
+!README.md

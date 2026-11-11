@@ -61,14 +61,15 @@ function send(res, status, body, headers = {}) {
   res.end(payload);
 }
 
-export function createServer(options = {}) {
+/** Request handler usable with node:http and with Vercel's Node.js functions. */
+export function createHandler(options = {}) {
   const env = options.env || process.env;
   const fetchImpl = options.fetch || globalThis.fetch;
   const token = env.ACCESS_TOKEN || '';
-  const region = env.REGION || env.FLY_REGION || 'unknown';
+  const region = env.REGION || env.FLY_REGION || (env.VERCEL_REGION ? `vercel-${env.VERCEL_REGION}` : 'unknown');
   const log = options.log || ((...args) => console.log(new Date().toISOString(), ...args));
 
-  return http.createServer(async (req, res) => {
+  return async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
 
     if (req.method === 'OPTIONS') return send(res, 204, '');
@@ -120,7 +121,11 @@ export function createServer(options = {}) {
       log(`502 ${path} ${err.message}`);
       return send(res, 502, { ok: false, error: 'upstream request failed' });
     }
-  });
+  };
+}
+
+export function createServer(options = {}) {
+  return http.createServer(createHandler(options));
 }
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;

@@ -96,3 +96,23 @@ test('returns 502 when SoundCloud is unreachable', async () => {
     await s.close();
   }
 });
+
+test('Vercel entry point (api/index.js) serves the same routes', async () => {
+  const http = require('node:http');
+  const handler = require('../api/index.js');
+  const prev = process.env.VERCEL_REGION;
+  process.env.VERCEL_REGION = 'iad1';
+  const server = http.createServer(handler);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const health = await (await fetch(base + '/health')).json();
+    assert.equal(health.ok, true);
+    assert.equal(health.region, 'vercel-iad1');
+    assert.equal((await fetch(base + '/api-v2/me')).status, 403);
+  } finally {
+    await new Promise((r) => server.close(r));
+    if (prev === undefined) delete process.env.VERCEL_REGION;
+    else process.env.VERCEL_REGION = prev;
+  }
+});
