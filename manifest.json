@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ByeBlock: SoundCloud Geoblocking Remover",
   "short_name": "ByeBlock",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Plays SoundCloud tracks that are geoblocked in your country by looking them up through a proxy server you control.",
   "homepage_url": "https://github.com/Kuzuw/byeblock",
   "minimum_chrome_version": "111",

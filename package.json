@@ -1,6 +1,6 @@
 {
   "name": "byeblock",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "Browser extension that plays SoundCloud tracks geoblocked in your country",
   "license": "MIT",

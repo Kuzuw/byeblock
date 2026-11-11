@@ -21,7 +21,7 @@ import http from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
-export const VERSION = '2.0.0';
+export const VERSION = '2.0.1';
 const UPSTREAM = 'https://api-v2.soundcloud.com';
 const UPSTREAM_TIMEOUT_MS = 15000;
 const USER_AGENT =

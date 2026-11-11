@@ -26,7 +26,7 @@ test('health reports region and auth state', async () => {
   try {
     let res = await fetch(s.base + '/health');
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { ok: true, region: 'iad', version: '2.0.0', authorized: false });
+    assert.deepEqual(await res.json(), { ok: true, region: 'iad', version: '2.0.1', authorized: false });
     res = await fetch(s.base + '/health', { headers: { 'x-byeblock-token': 'secret' } });
     assert.equal((await res.json()).authorized, true);
   } finally {
