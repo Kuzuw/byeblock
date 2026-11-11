@@ -103,6 +103,9 @@ Pushing a `v*` tag makes CI build the zip and attach it to a GitHub release.
 - If SoundCloud starts tying CDN stream URLs to the requesting region, audio would have to be proxied as well, which this version does not do.
 - Respect SoundCloud's terms and the rights holders in your country. This is provided as-is, for personal use.
 
-## Credits
+## Contributors
 
-Original idea and implementation by [Jari Zwarts](https://github.com/jariz). MIT licensed, see [LICENSE.md](LICENSE.md).
+- [Kuzuw](https://github.com/Kuzuw): 2.0 rewrite and maintenance
+- [Jari Zwarts (jariz)](https://github.com/jariz): original idea and implementation (2016)
+
+MIT licensed, see [LICENSE.md](LICENSE.md).
